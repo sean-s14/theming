@@ -6,27 +6,36 @@ $(document).ready(() => {
         // Matches all elements with an attribute of "class" that contain the string "light"
         const light_themed_el = $("*[class*=light]");
         const dark_themed_el = $("*[class*=dark]");
+        let all_elements = light_themed_el.add(dark_themed_el);
 
-        const change_classes = (el, current_class, new_class) => {
-            // Return string of all classes in element
-            let current_el_class = $(el).attr('class');
-            
-            // Make new string by replacing all instances of 'light/dark' 
-            // with 'dark/light' inside "current_el_class"
-            let new_el_class = current_el_class.replace(current_class, new_class);
+        const change_classes = (el) => {
+            // Return array of all classes in element
+            let current_el_class = $(el).attr('class').split(' ');
+            let new_el_class = [];
+
+            // Loop through classes swapping 'dark' with 'light' and vice versa
+            current_el_class.forEach(cls => {
+                let new_cls = cls.includes('dark')
+                    ? cls.replace(/dark/g, 'light')
+                    : cls.replace(/light/g, 'dark')
+                new_el_class.push(new_cls)
+            });
+            new_el_class = new_el_class.join(' ');            
 
             $(el).removeClass(current_el_class);  // Remove old classes
             $(el).addClass(new_el_class);  // Add new classes
         }
 
-        light_themed_el.each((index, el) => change_classes(el, /light/g, 'dark') );
-        dark_themed_el.each((index, el) => change_classes(el, /dark/g, 'light') );
+        all_elements.each((index, el) => change_classes(el) );
     }
 
     const change_theme = () => {
         const theme = localStorage.getItem('theme');
     
-        if ( theme === 'light' | null) {
+        // If using 'dark' as your default, change `theme === 'light'` to `theme === 'dark'`
+        // And change localStorage.setItem('theme', 'dark') to 'light'
+        // Also in "theme_initial_load" change theme === 'dark' to theme === 'light' 
+        if ( theme === 'light' || theme === null) {
             invert_theme();
             localStorage.setItem('theme', 'dark');
         } else if ( theme === 'dark' ) {
